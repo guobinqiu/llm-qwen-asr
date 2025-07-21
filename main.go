@@ -20,7 +20,7 @@ const (
 var dialer = websocket.DefaultDialer
 
 func main() {
-	apiKey := "" // os.Getenv("DASHSCOPE_API_KEY")
+	apiKey := "sk-3c26bc48e75044dd810a0838f18d75f9" // os.Getenv("DASHSCOPE_API_KEY")
 	conn, err := connectWebSocket(apiKey)
 	if err != nil {
 		log.Fatalf("connect websocket failed, err: %v", err)
@@ -80,7 +80,9 @@ func listen(conn *websocket.Conn, taskStarted chan bool, taskDone chan bool) {
 			log.Println("Error unmarshalling message:", err)
 			continue
 		}
-		handleEvent(conn, event, taskStarted, taskDone)
+		if handleEvent(event, taskStarted, taskDone) {
+			return // 结束子协程
+		}
 	}
 }
 
@@ -122,7 +124,7 @@ type Output struct {
 	} `json:"sentence"`
 }
 
-func handleEvent(conn *websocket.Conn, event Event, taskStarted chan<- bool, taskDone chan<- bool) {
+func handleEvent(event Event, taskStarted chan<- bool, taskDone chan<- bool) bool {
 	switch event.Header.Event {
 	case "task-started":
 		// {
@@ -149,6 +151,7 @@ func handleEvent(conn *websocket.Conn, event Event, taskStarted chan<- bool, tas
 		// }
 		log.Println("收到task-finished事件")
 		taskDone <- true
+		return true
 	case "task-failed":
 		// {
 		// 	"header": {
@@ -166,6 +169,7 @@ func handleEvent(conn *websocket.Conn, event Event, taskStarted chan<- bool, tas
 			log.Println("未知原因导致任务失败")
 		}
 		taskDone <- true
+		return true
 	case "result-generated":
 		// {
 		// 	"header": {
@@ -216,6 +220,7 @@ func handleEvent(conn *websocket.Conn, event Event, taskStarted chan<- bool, tas
 	default:
 		log.Println("Unknown event type:", event)
 	}
+	return false
 }
 
 // 等待task-started事件
@@ -340,7 +345,7 @@ func sendAudioData(conn *websocket.Conn) error {
 		if err != nil {
 			return err
 		}
-		time.Sleep(20 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 	}
 	return nil
 }
