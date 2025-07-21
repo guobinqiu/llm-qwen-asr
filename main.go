@@ -20,7 +20,7 @@ const (
 var dialer = websocket.DefaultDialer
 
 func main() {
-	apiKey := "sk-3c26bc48e75044dd810a0838f18d75f9" // os.Getenv("DASHSCOPE_API_KEY")
+	apiKey := "" // os.Getenv("DASHSCOPE_API_KEY")
 	conn, err := connectWebSocket(apiKey)
 	if err != nil {
 		log.Fatalf("connect websocket failed, err: %v", err)
