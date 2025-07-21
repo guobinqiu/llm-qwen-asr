@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -20,7 +21,9 @@ const (
 var dialer = websocket.DefaultDialer
 
 func main() {
-	apiKey := "" // os.Getenv("DASHSCOPE_API_KEY")
+	_ = godotenv.Load()
+
+	apiKey := os.Getenv("DASHSCOPE_API_KEY")
 	conn, err := connectWebSocket(apiKey)
 	if err != nil {
 		log.Fatalf("connect websocket failed, err: %v", err)
