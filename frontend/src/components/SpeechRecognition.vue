@@ -34,8 +34,6 @@ export default {
   },
   methods: {
     async start() {
-      if (this.recording) return
-
       this.recording = true
 
       // 初始化 WebSocket（如果尚未连接）
@@ -44,10 +42,8 @@ export default {
         this.ws.binaryType = 'arraybuffer'
 
         this.ws.onmessage = (e) => {
-          if (!this.recording) return
           const text = e.data.trim()
           console.log('Received:', text)
-          if (!text) return
           this.currentTranscript = text
         }
 
@@ -62,10 +58,9 @@ export default {
       this.audioCtx = new (window.AudioContext || window.webkitAudioContext)()
       const inputRate = this.audioCtx.sampleRate
       const source = this.audioCtx.createMediaStreamSource(this.audioStream)
-      this.scriptNode = this.audioCtx.createScriptProcessor(8192, 1, 1)
+      this.scriptNode = this.audioCtx.createScriptProcessor(1024, 1, 1)
 
       this.scriptNode.onaudioprocess = (e) => {
-        if (!this.recording || this.ws.readyState !== WebSocket.OPEN) return
         const input = e.inputBuffer.getChannelData(0)
         const pcm = this.resampleToPCM(input, inputRate, this.sampleRate)
         if (pcm) {
@@ -75,18 +70,30 @@ export default {
 
       source.connect(this.scriptNode)
       this.scriptNode.connect(this.audioCtx.destination)
+
+      // 启动定时器，每隔 5 秒发送一次静音音频
+      // this.silenceInterval = setInterval(() => {
+      //   if (this.ws.readyState === WebSocket.OPEN) {
+      //     this.sendSilentAudio()
+      //   }
+      // }, 5000)
     },
 
     stop() {
-      if (!this.recording) return
       this.recording = false
 
+      // 清理定时器，停止发送静音音频
+      // if (this.silenceInterval) {
+      //   clearInterval(this.silenceInterval)
+      //   this.silenceInterval = null
+      // }
+
       // 延迟500ms，确保音频数据完全发送
-      setTimeout(() => {
-        this.scriptNode && this.scriptNode.disconnect()
-        this.audioCtx && this.audioCtx.close()
-        this.audioCtx = null
-      }, 500)
+      // setTimeout(() => {
+      //   this.scriptNode && this.scriptNode.disconnect()
+      //   this.audioCtx && this.audioCtx.close()
+      //   this.audioCtx = null
+      // }, 500)
     },
 
     resampleToPCM(input, fromRate, toRate) {
@@ -99,6 +106,13 @@ export default {
       }
       return new Uint8Array(output.buffer)
     },
+     // 发送静音音频
+    // sendSilentAudio() {
+    //   const silentAudio = new ArrayBuffer(1024);  // 创建一个空的音频数据块，表示静音（例如全零的 PCM 数据）
+    //   if (this.ws.readyState === WebSocket.OPEN) {
+    //     this.ws.send(silentAudio)
+    //   }
+    // },
   }
 }
 </script>

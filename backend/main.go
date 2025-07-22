@@ -47,6 +47,7 @@ type Params struct {
 	Format        string   `json:"format"`
 	SampleRate    int      `json:"sample_rate"`
 	LanguageHints []string `json:"language_hints"`
+	Heartbeat     bool     `json:"heartbeat"`
 }
 
 type Input struct {
@@ -320,6 +321,7 @@ func sendRunTaskCmd(aliyunConn *websocket.Conn) (string, error) {
 					// "fr",  //法语
 					// "ru",  //俄语
 				},
+				// Heartbeat: true, // true：在持续发送静音音频的情况下，可保持与服务端的连接不中断。
 			},
 			Input: Input{},
 		},
