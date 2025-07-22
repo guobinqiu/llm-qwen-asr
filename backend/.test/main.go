@@ -20,6 +20,44 @@ const (
 
 var dialer = websocket.DefaultDialer
 
+type Event struct {
+	Header  Header  `json:"header"`
+	Payload Payload `json:"payload"`
+}
+
+type Header struct {
+	Event        string `json:"event"`
+	ErrorMessage string `json:"error_message"`
+	Action       string `json:"action"`
+	TaskID       string `json:"task_id"`
+	Streaming    string `json:"streaming"`
+}
+
+type Payload struct {
+	Output     Output `json:"output"`
+	TaskGroup  string `json:"task_group"`
+	Task       string `json:"task"`
+	Function   string `json:"function"`
+	Model      string `json:"model"`
+	Parameters Params `json:"parameters"`
+	Input      Input  `json:"input"`
+}
+
+type Params struct {
+	Format        string   `json:"format"`
+	SampleRate    int      `json:"sample_rate"`
+	LanguageHints []string `json:"language_hints"`
+}
+
+type Input struct {
+}
+
+type Output struct {
+	Sentence struct {
+		Text string `json:"text"`
+	} `json:"sentence"`
+}
+
 func main() {
 	_ = godotenv.Load()
 
@@ -50,6 +88,7 @@ func main() {
 	}
 
 	// 发送finish-task指令
+	// 用于结束语音识别任务
 	if err := sendFinishTaskCmd(conn, taskID); err != nil {
 		log.Fatalf("send finish-task cmd failed, err: %v", err)
 	}
@@ -87,44 +126,6 @@ func listen(conn *websocket.Conn, taskStarted chan bool, taskDone chan bool) {
 			return // 结束子协程
 		}
 	}
-}
-
-type Event struct {
-	Header  Header  `json:"header"`
-	Payload Payload `json:"payload"`
-}
-
-type Header struct {
-	Event        string `json:"event"`
-	ErrorMessage string `json:"error_message"`
-	Action       string `json:"action"`
-	TaskID       string `json:"task_id"`
-	Streaming    string `json:"streaming"`
-}
-
-type Payload struct {
-	Output     Output `json:"output"`
-	TaskGroup  string `json:"task_group"`
-	Task       string `json:"task"`
-	Function   string `json:"function"`
-	Model      string `json:"model"`
-	Parameters Params `json:"parameters"`
-	Input      Input  `json:"input"`
-}
-
-type Params struct {
-	Format        string   `json:"format"`
-	SampleRate    int      `json:"sample_rate"`
-	LanguageHints []string `json:"language_hints"`
-}
-
-type Input struct {
-}
-
-type Output struct {
-	Sentence struct {
-		Text string `json:"text"`
-	} `json:"sentence"`
 }
 
 func handleEvent(event Event, taskStarted chan<- bool, taskDone chan<- bool) bool {
@@ -284,14 +285,14 @@ func sendRunTaskCmd(conn *websocket.Conn) (string, error) {
 				Format:     "pcm", //对于opus和speex格式的音频，需要ogg封装；对于wav格式的音频，需要pcm编码
 				SampleRate: 16000,
 				LanguageHints: []string{
-					"zh", //中文 包括上海话、吴语、闽南语、东北话、甘肃话、贵州话、河南话、湖北话、湖南话、江西话、宁夏话、山西话、陕西话、山东话、四川话、天津话、云南话、粤语
-					// "en",  //英文
-					// "ja",  //日语
-					// "yue", //粤语
-					// "ko",  //韩语
-					// "de",  //德语
-					// "fr",  //法语
-					// "ru",  //俄语
+					"zh",  //中文 包括上海话、吴语、闽南语、东北话、甘肃话、贵州话、河南话、湖北话、湖南话、江西话、宁夏话、山西话、陕西话、山东话、四川话、天津话、云南话、粤语
+					"en",  //英文
+					"ja",  //日语
+					"yue", //粤语
+					"ko",  //韩语
+					"de",  //德语
+					"fr",  //法语
+					"ru",  //俄语
 				},
 			},
 			Input: Input{},
