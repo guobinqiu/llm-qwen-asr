@@ -12,8 +12,11 @@ brew install ffmpeg
 ffmpeg -i asr_example.wav -f s16le -acodec pcm_s16le -ar 16000 -ac 1 asr_example_16k.pcm
 ```
 
+## 效果
+
+<img width="588" height="278" alt="image" src="https://github.com/user-attachments/assets/bd1a17e9-539f-4188-aec7-62a39d33d9fb" />
 
 ## TODOs
-- [ ] 应用后端连接到阿里云websocket
-- [ ] 应用前端连接到应用后端websocket
-- [ ] 音频文件改成通过麦克风实时输入
+- [x] 应用后端连接到阿里云websocket
+- [x] 应用前端连接到应用后端websocket
+- [x] 音频文件改成通过麦克风实时输入
