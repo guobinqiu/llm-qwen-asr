@@ -2,8 +2,6 @@
 
 <img width="588" height="278" alt="image" src="https://github.com/user-attachments/assets/bd1a17e9-539f-4188-aec7-62a39d33d9fb" />
 
-## Note
-
 音频转换(wav -> pcm)
 ```
 brew install ffmpeg
