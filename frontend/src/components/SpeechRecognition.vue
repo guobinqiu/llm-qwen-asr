@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>阿里云语音识别测试</h2>
+    <h2>语音识别</h2>
 
     <button
       @mousedown="start"
@@ -70,32 +70,10 @@ export default {
 
       source.connect(this.scriptNode)
       this.scriptNode.connect(this.audioCtx.destination)
-
-      // 启动定时器，每隔 5 秒发送一次静音音频
-      // this.silenceInterval = setInterval(() => {
-      //   if (this.ws.readyState === WebSocket.OPEN) {
-      //     this.sendSilentAudio()
-      //   }
-      // }, 5000)
     },
-
     stop() {
       this.recording = false
-
-      // 清理定时器，停止发送静音音频
-      // if (this.silenceInterval) {
-      //   clearInterval(this.silenceInterval)
-      //   this.silenceInterval = null
-      // }
-
-      // 延迟500ms，确保音频数据完全发送
-      // setTimeout(() => {
-      //   this.scriptNode && this.scriptNode.disconnect()
-      //   this.audioCtx && this.audioCtx.close()
-      //   this.audioCtx = null
-      // }, 500)
     },
-
     resampleToPCM(input, fromRate, toRate) {
       const ratio = fromRate / toRate
       const newLen = Math.round(input.length / ratio)
@@ -105,19 +83,12 @@ export default {
         output[i] = s < 0 ? s * 0x8000 : s * 0x7FFF
       }
       return new Uint8Array(output.buffer)
-    },
-     // 发送静音音频
-    // sendSilentAudio() {
-    //   const silentAudio = new ArrayBuffer(1024);  // 创建一个空的音频数据块，表示静音（例如全零的 PCM 数据）
-    //   if (this.ws.readyState === WebSocket.OPEN) {
-    //     this.ws.send(silentAudio)
-    //   }
-    // },
+    }
   }
 }
 </script>
 
-<style>
+<style scoped>
 button.recording {
   background-color: red;
   color: white;

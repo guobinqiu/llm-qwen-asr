@@ -1,4 +1,4 @@
-module github.com/guobinqiu/llm-qwen-paraformer
+module github.com/guobinqiu/llm-qwen-asr
 
 go 1.23.9
 
