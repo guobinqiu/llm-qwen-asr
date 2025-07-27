@@ -7,6 +7,7 @@
 ```
 brew install ffmpeg
 ffmpeg -i asr_example.wav -f s16le -acodec pcm_s16le -ar 16000 -ac 1 asr_example_16k.pcm
+ffmpeg -i asr.mov -vcodec h264 -acodec aac asr.mp4
 ```
 (macOS)
 
