@@ -1,6 +1,6 @@
 # 语音转文字
 
-<img width="588" height="278" alt="image" src="https://github.com/user-attachments/assets/bd1a17e9-539f-4188-aec7-62a39d33d9fb" />
+<video src="https://github.com/user-attachments/assets/2f6f178f-22a2-431a-9e20-ddf15f02e078" type="video/mp4"><video>
 
 ## 音频转换
 
